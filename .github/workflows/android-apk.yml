@@ -1,0 +1,100 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'www/**'
+      - '**.md'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unpack uploaded zip (updates files from any zip in repo root)
+        run: |
+          ZIP=$(ls *.zip 2>/dev/null | head -n1)
+          if [ -n "$ZIP" ]; then
+            echo "Unpacking $ZIP"
+            rm -rf /tmp/zx && mkdir -p /tmp/zx
+            unzip -q -o "$ZIP" -d /tmp/zx -x "*.github/*" "__MACOSX/*"
+            R=/tmp/zx
+            if [ ! -d "$R/www" ]; then
+              D=$(find /tmp/zx -maxdepth 2 -type d -name www | head -n1)
+              [ -n "$D" ] || { echo "No www folder inside the zip"; exit 1; }
+              R=$(dirname "$D")
+            fi
+            cp -a "$R"/. .
+            rm -f "$ZIP"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Unpack app files from zip" || true
+            git push || echo "Push skipped"
+          fi
+
+      - name: Verify project layout
+        run: |
+          for f in www/index.html www/app-body.txt www/css/style.css www/js/boot.js www/js/app.js www/js/pdf/viewer.js www/js/pdf/editor.js www/lib/pdf.min.js www/lib/pdf.worker.min.js; do
+            test -f "$f" || { echo "Missing $f"; exit 1; }
+          done
+
+      - name: Write live-update config
+        run: |
+          printf 'window.WN_CFG={repo:"%s",branch:"%s",build:"%s"};\n' "$GITHUB_REPOSITORY" "${{ github.event.repository.default_branch }}" "$GITHUB_SHA" > www/js/ota-config.js
+          cat www/js/ota-config.js
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Generate Android project
+        run: npx cap add android
+
+      - name: Allow opening PDF files from other apps
+        run: python3 scripts/patch-manifest.py
+
+      - name: Sync web app into Android project
+        run: npx cap sync android
+
+      - name: Brand icons and splash
+        continue-on-error: true
+        run: |
+          pip install pillow
+          python3 scripts/android-assets.py
+
+      - name: Use fixed signing key (keeps app data on updates)
+        run: |
+          mkdir -p ~/.android
+          cp signing/debug.keystore ~/.android/debug.keystore
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wasib-Notes-debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
