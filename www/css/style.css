@@ -423,3 +423,36 @@ body[data-s=onb] #toast{bottom:auto;top:calc(16px + env(safe-area-inset-top))}
 .efab{background:linear-gradient(135deg,#8B5CF6,#7138E8 60%,#FF5A9A)}
 @media(max-width:340px){.fn b{font-size:.62rem}.bt{max-width:100%}.bart{display:none}}
 @media(min-width:700px){#home,#aif,#dev{padding-left:24px;padding-right:24px}}
+
+/* v6.1 tweaks */
+.ban{padding:10px 12px 10px;border-radius:20px;margin-top:6px}
+.bt{max-width:72%}
+.bt h2{font-size:.9rem;line-height:1.2}
+.bt p{margin:3px 0 0;font-size:.64rem;line-height:1.35}
+.bart{width:72px;height:72px;right:8px;top:6px}
+.bbt{margin-top:8px;gap:6px}
+.bn,.bs{min-height:34px;border-radius:11px;padding:0 6px}
+.bn{font-size:.7rem}.bs{font-size:.64rem}
+.bn svg,.bs svg{width:14px;height:14px}
+.ah{display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px}
+.ah .ib{width:40px;height:40px;border-radius:14px}
+.ah .ib svg{width:20px;height:20px}
+.at{flex:1;min-width:0}
+.at h2{font-size:1.08rem}
+.wand{width:30px;height:30px}
+.at p{margin:5px 0 0;font-size:.72rem;line-height:1.4;max-width:none}
+.robot{width:78px}
+.aip{height:max(320px,calc(100dvh - 340px))}
+#home[data-v=f]{background:radial-gradient(circle at 88% 6%,#E9D9FF 0,#E9D9FF00 40%),radial-gradient(circle at 4% 72%,#D8F0FF 0,#D8F0FF00 42%),radial-gradient(circle at 96% 90%,#FFDDEB 0,#FFDDEB00 40%),linear-gradient(180deg,#FFF4F7 0,#FFEFE4 100%)}
+.cons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cb{width:auto;height:auto;border-radius:22px;padding:16px 10px 14px;flex-direction:column;gap:3px;text-align:center}
+.cb.cb{display:flex;align-items:center}
+.cb .ci{display:grid;place-items:center;width:58px;height:58px;margin-bottom:6px;border-radius:20px;color:#fff;box-shadow:0 10px 20px var(--g)}
+.cb .ci svg{width:30px;height:30px}.cb .ci i{display:flex}
+.cb.wa .ci{background:linear-gradient(135deg,#6BEA9B,#1FB85A);--g:#25D3664d}
+.cb.em .ci{background:linear-gradient(135deg,#B58CFF,#7138E8 55%,#FF5A9A);--g:#7138E859}
+.cb b{font-size:.86rem;font-weight:800;color:var(--tx)}
+.cb small{font-size:.7rem;color:var(--t2);font-weight:500}
+.cb .ci{line-height:0;flex:none}
+.cb .ci svg{display:block}
+.bart{width:62px;height:62px;right:12px;top:4px}
